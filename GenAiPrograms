@@ -1,142 +1,555 @@
-1 a. go to badstore , ifconfig note ip address and open from seed lab that ip 
-login: admin' -- , what's new = select item add to cart , in space bar inspect q . View cart , There see the storage see view CartID = change the price and again view cart the price will be changed .
-________________________________________________________________________
+1.
+cmd /c "copy /b lion.jpg + f1.txt new.jpg"
+
+2.
+-open paint and write and save it as .bmp
+-go to coagula and open the file now render it without blue 
+-save it as wav 
+-open sonic visualizer
+-open file go to layer
+- add spectrogram 
+- all channel mixed
+
+3.
+
+import numpy as np
+from PIL import Image
+
+def Encode(src, message, des):
+    img = Image.open(src)
+    
+    if img.mode != 'RGB':
+        img = img.convert('RGB')
+    width, height = img.size
+    array = np.array(img)
+    total_pixels = array.size // 3
+    # Add delimiter
+    message += "$t3g0"
+    b_message = ''.join([format(ord(i), "08b") for i in message])
+    required_bits = len(b_message)
+    if required_bits > total_pixels * 3:
+        print("ERROR: Image too small for message")
+        return
+    index = 0
+    # Encode
+    for i in range(height):
+        for j in range(width):
+            for k in range(3):
+                if index < required_bits:
+                    array[i][j][k] = (array[i][j][k] & 254) | int(b_message[index])
+                    index += 1
+    # Save as PNG (lossless)
+    enc_img = Image.fromarray(array.astype('uint8'))
+    enc_img.save(des)
+    print("Image Encoded Successfully")
+
+def Decode(src):
+    img = Image.open(src)
+    
+    if img.mode != 'RGB':
+        img = img.convert('RGB')
+    array = np.array(img)
+    height, width, _ = array.shape
+    hidden_bits = ""
+    # Extract bits
+    for i in range(height):
+        for j in range(width):
+            for k in range(3):
+                hidden_bits += str(array[i][j][k] & 1)
+    # Convert to characters
+    chars = [hidden_bits[i:i+8] for i in range(0, len(hidden_bits), 8)]
+    message = ""
+    for c in chars:
+        message += chr(int(c, 2))
+        if message.endswith("$t3g0"):
+            print("Hidden Message:", message[:-5])
+            return
+    print("NO hidden message")
+
+def Stego():
+    print("-----Welcome to $t3g0------")
+    print("1. Encode")
+    print("2. Decode")
+    choice = input("Enter your choice: ")
+    if choice == '1':
+        src = input("Enter source image path: ")
+        message = input("Enter message to hide: ")
+        des = input("Enter destination image path: ")
+        print("Encoding...")
+        Encode(src, message, des)
+    elif choice == '2':
+        src = input("Enter source image path: ")
+        print("Decoding...")
+        Decode(src)
+    else:
+        print("Invalid choice")
+
+if __name__ == "__main__":
+    Stego()
+
+
+(only png image)
+
+
+4.
+touch plain.txt
+gedit plain.txt
+cat plain.txt
+
+openssl enc -aes-128-cbc -e -in plain.txt -out cipher1.bin -K 00112233445566778899aabbccddeeff -iv 0102030405060708090a0b0c0d0e0f
+openssl enc -aes-128-cbc -d -in cipher1.bin -out output1.txt -K 00112233445566778899aabbccddeeff -iv 0102030405060708090a0b0c0d0e0f
+xxd cipher1.bin
+cat output1.txt
+
+openssl enc -aes-128-ecb -e -in plain.txt -out cipher2.bin -K 00112233445566778899aabbccddeeff
+openssl enc -aes-128-ecb -d -in cipher2.bin -out output2.txt -K 00112233445566778899aabbccddeeff
+xxd cipher2.bin
+cat output2.txt
+
+5.
+openssl enc -aes-128-ecb -e -in pic_original.bmp -out pic_ecb.bmp -K 0123456789abcdeffedcba9876543210
+
+openssl enc -aes-128-cbc -e -in pic_original.bmp -out pic_cbc.bmp -K 0123456789abcdeffedcba9876543210 -iv 00112233445566778899aabbccddeeff
+
+head -c 54 pic_original.bmp > header
+
+tail -c +55 pic_ecb.bmp > body_ecb
+cat header body_ecb > new_ecb.bmp
+
+tail -c +55 pic_cbc.bmp > body_cbc
+cat header body_cbc > new_cbc.bmp
+
+eog new_ecb.bmp
+eog new_cbc.bmp          
+
+
+6th
+
+echo -n 12345 > f1.txt
+echo -n 1234567890 > f2.txt
+echo -n 1234567890abcdef > f3.txt
+
+ls -l f*.txt
+
+openssl enc -aes-128-cbc -e -in f1.txt -out f1.bin -K 0123456789abcdeffedcba9876543210 -iv 00112233445566778899aabbccddeeff
+openssl enc -aes-128-cbc -d -in f1.bin -out f1_dec.txt -K 0123456789abcdeffedcba9876543210 -iv 00112233445566778899aabbccddeeff
+openssl enc -aes-128-cbc -d -in f1.bin -out f1_nopad.txt -nopad -K 0123456789abcdeffedcba9876543210 -iv 00112233445566778899aabbccddeeff
+
+openssl enc -aes-128-cbc -e -in f2.txt -out f2.bin -K 0123456789abcdeffedcba9876543210 -iv 00112233445566778899aabbccddeeff
+openssl enc -aes-128-cbc -d -in f2.bin -out f2_dec.txt -K 0123456789abcdeffedcba9876543210 -iv 00112233445566778899aabbccddeeff
+openssl enc -aes-128-cbc -d -in f2.bin -out f2_nopad.txt -nopad -K 0123456789abcdeffedcba9876543210 -iv 00112233445566778899aabbccddeeff
+
+openssl enc -aes-128-cbc -e -in f3.txt -out f3.bin -K 0123456789abcdeffedcba9876543210 -iv 00112233445566778899aabbccddeeff
+openssl enc -aes-128-cbc -d -in f3.bin -out f3_dec.txt -K 0123456789abcdeffedcba9876543210 -iv 00112233445566778899aabbccddeeff
+openssl enc -aes-128-cbc -d -in f3.bin -out f3_nopad.txt -nopad -K 0123456789abcdeffedcba9876543210 -iv 00112233445566778899aabbccddeeff
+
+ls -l f*.bin
+xxd f1.txt
+xxd f1_nopad.txt
+
+
+7th
+touch plain.txt
+gedit plain.txt
+ls -l plain.txt
+
+openssl enc -aes-128-ecb -nosalt -e -in thousand.txt -out error_prop.bin -k
+00112233445566778899aabbccddeeff
+
+ghex error_prop.bin
+
+
+openssl enc -aes-128-ecb -nosalt -d -in error_prop.bin -out error_prop.txt -k
+00112233445566778899aabbccddeeff
+
+gedit error_prop.txt
+
+openssl enc -aes-128-cbc -nosalt -e -in thousand.txt -out error_prop_cbc.bin -k
+001122334455667788899aabbccddeeff -iv 0102030405060708090a0b0c0d0e0f
+
+ghex error_prop_cbc.bin
+
+openssl enc -aes-128-cbc -nosalt -d -in error_prop_cbc.bin -out error_prop_cbc.txt -k
+001122334455667788899aabbccddeeff -iv 0102030405060708090a0b0c0d0e0f
+
+gedit error_prop_cbc.txt
+
+
+
+openssl enc -aes-128-cbc -e -in plain.txt -out cipher1.bin -k
+00112233445566778899aabbccddeeff -iv 0102030405060708090a0b0c0e0f
+
+openssl enc -aes-128-cbc -e -in plain.txt -out cipher2.bin -k
+00112233445566778899aabbccddeeff -iv 102030405060708090a0b0c0d0e0f0
+
+xxd cipher1.bin
+xxd cipher2.bin
+
+
+8th
+openssl genrsa -out key.pri 2048
+cat key.pri
+
+openssl rsa -in key.pri -noout -text
+
+openssl rsa -in key.pri -out key.pub -pubout
+cat key.pub
+
+touch Earth.txt
+gedit Earth.txt
+
+openssl rsautl -encrypt -inkey key.pub -pubin -in Earth.txt -out Earth.enc
+openssl rsautl -decrypt -inkey key.pri -in Earth.enc -out Earth.dec
+cat Earth.dec
+
+openssl rand -hex 32 > encryption.key
+
+openssl rsautl -encrypt -inkey key.pub -pubin -in encryption.key -out encryption.key.enc
+openssl rsautl -decrypt -inkey key.pri -in encryption.key.enc -out encryption.key.dec
+
+cat encryption.key
+cat encryption.key.dec
+
+
+9th
+
+10th
+tcpdump -D
+
+sudo tcpdump -i any
+Ctrl + C
+
+sudo tcpdump -i any -w capture.pcap
+Ctrl + C
+
+# open new terminal
+ping google.com
+Ctrl + C
+
+# back to first terminal
+sudo tcpdump -i any tcp
+Ctrl + C
+
+sudo tcpdump -i any icmp
+Ctrl + C
+
+sudo tcpdump -i any port 80
+Ctrl + C
+
+sudo tcpdump -n -i any 'tcp[tcpflags] & tcp-syn != 0'
+Ctrl + C
+
+sudo tcpdump -n -i any 'tcp[tcpflags] & tcp-syn != 0' -w tcpsyn.pcap
+Ctrl + C
+
+sudo tcpdump -n -i any 'tcp[tcpflags] & tcp-ack != 0'
+Ctrl + C
+
+sudo tcpdump -n -i any 'tcp[tcpflags] & (tcp-syn|tcp-ack) != 0'
+Ctrl + C
+
+sudo tcpdump -n -i any 'tcp[tcpflags] & tcp-fin != 0' -w tcpfin.pcap
+Ctrl + C
+
+sudo tcpdump -r capture.pcap
+
+sudo tcpdump -A -r capture.pcap
+
+sudo tcpdump -xx -r capture.pcap
+
+sudo tcpdump -xx -r tcpsyn.pcap
+
+___________________________________________________________________________________________
+5a Badstore
+Go to browser 
+Put ipaddress
+Login as admin' -- 
+Go to what's new
+Add to cart 
+View cart 
+Inspect
+Storage 
+Change the value
+Again view cart 
+5b
+sudo python3
 from scapy.all import *
-packet=IP()/TCP()                1(b)
-e_pack=Ether()/packet
-e_pack.show()
-____________________
-1(c) nano port_scan.sh
+myframe=Ether()/IP() 
+myframe.show()
+myframe.summary()
+___
+packet=Ether()/ARP()
+packet.show()
+packet.summary()
+5c
+nano port_scan.sh
+inside
 #!/bin/bash
-echo "Enter the target Ip"
-read target
-echo "Enter start port:"
-read start
-echo "Enter end port"
-read end
-echo "Scanning the ports from $start to $end on $target"
-for((port=$start ; port<= $end ; port++))
-do 
-        nc -z -w 1 $target $port 2>/dev/null
-        if[$ ? -eq 0]; then
-                echo "port $port is open"
-          fi
+host="www.example.com"
+read -p "Enter the starting port number: " start_port
+read -p "Enter the ending port number: " end_port
+for ((port=start_port; port<=end_port; port++))
+do
+    echo "Scanning port $port..."
+    nc -zv -w1 "$host" "$port" 2>&1
 done
-echo "Scan completed"
->> chmod +x port_scan.sh
->> ./port_scan.sh
-_____________________________________________________
-2 a. open badstore
-login as joe@supplier.com '--
-view previous order see the card used 
-______________________________________________
-2 c . nc -l -p 1234(one terminal) 
-         nc 127.0.0.1 1234 (another terminal)
-__________________________________________________
+chmod +x port_scan.sh
+./port_scan.sh
+------------------------------------------------------
+6a badstore
+Go to browser 
+Put ipaddress
+Login as joe@supplier.com' --
+View previous orders
+6b
+sudo python3
 from scapy.all import *
-packets=sniff(count=10)            2(b)
-packets.summary()
-print(packets[0].show())
-print(packets[1].show())
-_______________________________________________________________
+pac=sniff(count=10)
+pac.summary()
+6c
+1st termianl
+nc -vlp 1234
+2nd terminal
+nc localhost 1234
+1st terminal 
+Ifconfig
+Copy inet ipaddr
+nc -vlp 1234
+2nd terminal 
+nc ipaddr 1234
+------------------------------------------------------
+7a
+sudo python3
 from scapy.all import *
-result,unanswered=traceroute([&quot;www.example.com&quot;,&quot;www.google.com&quot;],maxttl=20)              3(a)
+result, unanswered = traceroute(["www.example.com", "www.google.com"], maxttl=20)
 result.show()
-____________________________________________________________
-3 b) >> nc www.google.com 80
- type : HEAD/HTTP/1.1
-             Host:www.google.com
-         >>nc www.google.com 80
-type:    GET/HTTP/1.1
-              Host:www.google.com
-_______________________________________________________
-3 c. >>nmap -sn 192.168.0.1/24 , >>nmap -sn 192.168.0.1
-________________________________________________________
+
+7b
+nc www.example.com 80
+GET / HTTP/1.1
+Host: example.com
+nc www.example.com 80
+HEAD / HTTP/1.1
+Host: example.com
+7c 
+nmap -sn 127.0.0.1
+nmap -sn 127.0.0.1/24
+------------------------------------------------------
+8a
+ifconfig
+nano scanner.py
+inside 
 import scapy.all as scapy
 request = scapy.ARP()
-request.pdst = &quot;192.168.1.1/28&quot;
-broadcast = scapy.Ether()                                    4(a)
-broadcast.dst = &quot;ff:ff:ff:ff:ff:ff&quot;
+request.pdst = "10.0.2.15/24"   
+broadcast = scapy.Ether()
+broadcast.dst = "ff:ff:ff:ff:ff:ff"
 request_broadcast = broadcast / request
-clients = scapy.srp(request_broadcast, timeout=2)[0]
+clients = scapy.srp(request_broadcast, timeout=1)[0]
+print("IP Address\t\tMAC Address")
+print("-----------------------------------------")
 for element in clients:
-print(element[1].psrc + &quot; - &quot; + element[1].hwsrc)
-___________________________________________________________
-4b) >> nc -l -p 4000 / open in browser localhost:4000
-type : HTTP/1.1 200 OK
-            Content-Type- text/plain
-            Hi everyone
-__________________________________________________________
-4 c. >> nmap 192.168.1.100-20 , >>nmap 192.168.1.0/24
-___________________________________________________________
-5 a) login : admin '--
-        what'new select one item add to cart ,in search bar right click inspect
-delete maxlenght , <script>alert(document.cookie)</script> cart id is displayed
-______________________________________________________________
-5b - 1c
-____________________________
-5c, nmap 192.168.1.1 >> nmap -sV 192.168.1.1
-____________________________________
-6a - 5a
-________________________________________________________________ 
-6b ) >>nmap -O 192.168.1.1 , >>nmap -A 192.168.1.1
-___________________________________________________
-6 c) login: admin '--, what'new : select one item -> add items, go to search bar right click inspect , delete maxlenght , again go type 
-xx' IN (itemnum,sdesc,ldesc) union select email,passwd,123,123 from userdb LIMIT 2 --
-two is displayed : select hash from admin in browser MD5 reverse again note that password login with that password , in above url change action =login to action=admin
-in view add user:- right click view page source html , hidden
-___________________________________________
-from scapy.all import *
-packet=IP(dst=&quot;8.8.8.8&quot;)/ICMP()  --7(a)
-send(packet)
-________________________________________________________________
-7b) >> nc -l -p 5000 , localhost:5000
+    print(element[1].psrc + "\t\t" + element[1].hwsrc)
+sudo python3 scanner.py
+8b
+nc -l -p 5000
+Go to browser 
+http://localhost:5000
+
+in terminal after few seconds 
 HTTP/1.1 200 OK
-Content-type- text/html; charset=UTF-8
-Server:nooblinux
-</doctype html>
+Content-Type: text/plain
+Hello from Netcat!
+Go again to browser and see the output 
+8c 
+nmap -sn 127.0.0.100-200
+nmap -sn 127.0.0.0/24
+------------------------------------------------------
+9a Badstore
+Go to browser 
+Put ipaddress
+Login as admin' -- 
+What's new
+Add item to cart 
+Inspect 
+Remove max length 
+Add script
+<script>alert(document.cookie)</script>
+5b
+same as 1c
+5c 
+nmap 127.0.1.1
+nmap -sV 127.0.1.1
+------------------------------------------------------
+10a Badstore(same as 5a)
+<script>alert(document.cookie)</script>
+10b 
+nmap -O 127.0.1.1
+nmap -A 127.0.1.1
+10c Badstore
+Go to browser 
+Put ipaddress
+Login as admin' -- 
+What's new
+Add to cart
+Inspect 
+Remove max length 
+Add script 
+xx' IN (itemnum,sdesc,ldesc) union select email,passwd,123,123 from userdb LIMIT 2 -- 
+Copy the item of admin 
+Md5 reverse 
+Back to login admim with new password 
+Change url to admin
+View sales report to add user to do it
+Right click , view page source 
+Search for hidden
+------------------------------------------------------
+11a
+sudo python3
+from scapy.all import *
+packet = IP(dst="8.8.8.8")/ICMP()
+send(packet)
+open wwire shark and search for icmp then re run the below command 
+send(IP(dst="8.8.8.8")/ICMP())
+Go to wire shark  ,any ,icmp
+Again in terminal 
+ans, unans = sr(packet, timeout=2)
+ans[0]
+ans[0][1].show()
+11b
+nc -l -p 5000
+Run http://localhost:5000
+Go back to terminal
+Enter twice 
+HTTP/1.1 200 OK
+Content-Type- text/html; charset=UTF.8
+Server: nooblinux
+Enter twice
+HTTP/1.1 200 OK
+Content-Type: text/html; charset=UTF-8
+Server: nooblinux
+<!DOCTYPE html>
+<html>
+<head>
 <title>kushi</title>
-<img src="">
-_____________________________________________
-7c) login:admin '-- , what's new select one item , add to csrt, go to search bar : right click inspect maxlenght - delete , type in search bar
+</head>
+<body>
+<h1>apple</h1>
+<img src="https://upload.wikimedia.org/wikipedia/commons/1/15/Red_Apple.jpg" width="200">
+</body>
+</html>Enter twice and ctrl c
+Go back to browser and check 5000
+
+11c Badstore
+Go to browser 
+Put ipaddress
+Login as admin' -- 
+What's new
+Add to cart
+Inspect 
+Remove max length 
+Add script 
 x' union select count(itemnum),count(itemnum),count(itemnum),count(itemnum) from
-itemdb --
-one box is displayed
-___________________________________________
+itemdb -- 
+------------------------------------------------------
+12a
 from scapy.all import *
-target = &quot;www.example.com&quot;
-for port in range(20, 25):
-packet = IP(dst=target) / TCP(dport=port, flags=&quot;S&quot;)
-response = sr1(packet, timeout=1, verbose=0)             8(a)
-if response:
-print(&quot;Port&quot;, port, &quot;is open&quot;)      
-_________________________________________________________
-8(b) >>nmap --script vuln 192.168.1.1 , >>nmap -ON"E:\\output.txt" 192.168.1.1
-_____________________________________________________
-8(c) go supplier login: joe@supplier.com '--
-____________________________________________
-9a-7b, 9b-4c,9c-2a
-____________________________________
- from scapy.all import *         10(a)
-def callback(packet):
-if packet.haslayer(ICMP):
-print(&quot;ICMP Packet Detected&quot;)
-packet.show()
-sniff(filter=&quot;icmp&quot;, prn=callback, count=10) 
-______________________________
-10b-5c
-__________________
-10.c) login:-admin '--,password ; secret
-above url action=admin , show current users 
-_____________________________________________
-11 a - 4a,11b-7b,11c-5a
-______________________________
+import socket
+target_ip = socket.gethostbyname("www.example.com")
+ports = [22, 80, 443]
+print(f"Scanning target: {target_ip}")
+for port in ports:
+    packet = IP(dst=target_ip)/TCP(dport=port, flags="S")
+    response = sr1(packet, timeout=1, verbose=0)
+    if response:
+        if response.haslayer(TCP):
+            if response[TCP].flags == "SA":
+                print(f"Port {port} is OPEN")
+                send(IP(dst=target_ip)/TCP(dport=port, flags="R"), verbose=0)
+            elif response[TCP].flags == "RA":
+                print(f"Port {port} is CLOSED")
+    else:
+        print(f"Port {port} is FILTERED or NO RESPONSE")
+
+12b 
+nmap --script vuln 127.0.1.1
+nmap --script vuln 127.0.1.1 -oN txtgh.txt
+12c Badstore
+Go to browser 
+Put ipaddress
+Login as  supplier as joe@supplier.com
+.....
+Login as admin
+Change url to admin 
+Add user do it
+Change url to admin
+Copy the password and make it to md5 
+Again login supplier as with new user and password 
+------------------------------------------------------
+9a 
+same as 7b
+9b
+same as 4c
+9c Badstore(2a)
+
+------------------------------------------------------
+14a
+nano icmp_monitor.py
 from scapy.all import *
-result,unanswered=traceroute([&quot;www.example.com&quot;,&quot;www.google.com&quot;],maxtt
-l=20)      12(a)
+def packet_callback(packet):
+        if packet.haslayer(IP):
+        if packet[IP].proto == 1:
+            print(f"ICMP packet detected from {packet[IP].src} to {packet[IP].dst}")
+sniff(prn=packet_callback, filter="icmp", store=0)
+sudo python3 icmp_monitor.py
+in another terminal run
+ping 8.8.8.8
+
+14b
+same as 5c
+
+14c Badstore
+
+Go to browser 
+Put ipaddress
+Login as admin' -- 
+In url change it to admin
+View sales report to show current user(.bizz)
+Copy password and make it to md5
+Copy the email of .bizz
+Go to login 
+Login with .bizz with new password 
+------------------------------------------------------
+15a
+nano scap.py 
+import scapy.all as scapy
+request = scapy.ARP()
+request.pdst = "192.168.5.0/24"
+broadcast = scapy.Ether()
+broadcast.dst = "ff:ff:ff:ff:ff:ff"
+request_broadcast = broadcast / request
+clients = scapy.srp(request_broadcast, timeout=1, verbose=False)[0]
+for element in clients:
+    print(element[1].psrc + "  " + element[1].hwsrc)
+ sudo python3 scap.py 
+15b
+same as 7b
+15 c Badstore(5a)
+
+------------------------------------------------------
+16 a
+nano traceroute.py
+from scapy.all import *
+result, unanswered = traceroute(
+    ["www.example.com", "www.google.com"],
+    maxttl=20
+)
 result.show()
-___________________________________
-12.b = 7b, 12 c= 5a
+sudo python3 traceroute.py
+16b
+same as 7b
 
+16 c
+Badstore(5a)
 
-
+sudo tcpdump -xx -r tcpfin.pcap
